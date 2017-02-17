@@ -1,0 +1,76 @@
+<html>
+
+<head>
+<title> Door Automation </title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+
+<body>
+
+<div> <!-- DOOR -->
+<h2>Door Automation 1</h2>
+<p>Here you can add/remove user to the Raspberry PI. </p>
+<hr>
+<p>
+Mac address in range now:<br>
+Mac address: <input type="text" id="mac" value="Mickey"><br>
+Device name: <input type="text" id="name" value="Mouse"><br>
+<input type="submit" id="scan" value="Scan user">
+<input type="submit" id="add" value="Add user">
+</p>
+
+<hr>
+<p>
+Remove device:<br>
+<select id="remove_list" size="6"> </select>
+<br><input type="button" id="removeuser"  value="Remove option" onclick="remove()">
+<br><button type="button" id="updateuser" onclick="readText()">Update option</button>
+
+</p>
+
+<hr>
+<p>
+Door option:<br>
+<input type="button" id="start"  value="Start">
+<input type="button" id="stop"  value="Stop">
+</p>
+
+
+
+
+<script>
+function myFunction() {
+    var x = document.getElementById("remove_list");
+    var option = document.createElement("option");
+    var txt = document.getElementById('name').value;
+    txt += "," + document.getElementById('mac').value;
+    option.text = txt;
+    x.add(option);
+}
+function update(){
+    var x = document.getElementById("remove_list");
+    x.remove();    
+}
+
+
+</script>
+
+</div>
+
+
+
+<hr>
+Websocket status:
+<br><div id="ws-status"> Waiting... </div>
+Message incomming:
+<br><div id="sys-status">  </div>
+
+
+
+<!-- Scripts -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="{{ static_url("ws-client.js") }}"></script>
+
+</body>
+
+</html>
