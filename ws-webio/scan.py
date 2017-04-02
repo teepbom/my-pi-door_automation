@@ -10,10 +10,15 @@ import bluetooth
 import select
 import datetime
 import time
+import RPi.GPIO as GPIO
+import multiprocessing
 
+
+#Initialize Raspberry PI GPIO
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(36, GPIO.OUT)
 #global variable
 RSSI_THRESHOLD = -50
-#Read user
 
 def read():
   with open("user", "r") as ins:
@@ -39,25 +44,71 @@ class MyDiscoverer(bluetooth.DeviceDiscoverer):
     
     def device_discovered(self, address, device_class, rssi, name):
 	print "[scan] find device ... "
-	if rssi > RSSI_THRESHOLD :
-	   print "[scan] found device !"
-	   if any(address in s for s in array):
-              print("[scan] Open for : Name [%s] MAC [%s] On: %s" % (name,address,datetime.datetime.now().strftime("%Y-%m-%d %H:%M")))
+	print rssi
+#        GPIO.output(36,False)
+
+        if any(address in s for s in array):
+	   if rssi > RSSI_THRESHOLD:  	
+	      print("[scan] Open for : Name [%s] MAC [%s] On: %s" % (name,address,datetime.datetime.now().strftime("%Y-%m-%d %H:%M")))		
 #	      write_log(name,address)
-	      	      	
+	      GPIO.output(36,True)	      
+	      time.sleep(4)
+  	      GPIO.output(36,False)
+ 	     
+#        if rssi > RSSI_THRESHOLD:  	
+#      	   print "[scan] found device !"
+#           if any(address in s for s in array):
+#              print("[scan] Open for : Name [%s] MAC [%s] On: %s" % (name,address,datetime.datetime.now().strftime("%Y-%m-%d %H:%M")))		
+#	      write_log(name,address)
+#	      GPIO.output(36,True)	      
+#    	      time.sleep(5)
+#    	      GPIO.output(36,False)
+	      	      	      	
     def inquiry_complete(self):
         self.done = True
 
+
+
+
+GPIO.output(36,False)
+
+
+
 def scan():  
   read()
-  while True:
-    d = MyDiscoverer()
-    d.find_devices(duration=1, lookup_names = True)
-    d.process_event()
 
-   # readfiles = [ d, ]
-    #rfds = select.select( readfiles, [], [] )[0]
-    #if d in rfds:
-     #  d.process_event()
-      
- 
+  while True:    
+     d = MyDiscoverer()
+     d.find_devices(duration=1, lookup_names = True, flush_cache=True)
+     d.process_event()
+     
+
+#    a = MyDiscoverer()
+#    a.find_devices(duration=1, lookup_names = True)
+#    a.process_event()
+
+#    b = MyDiscoverer()
+#    b.find_devices(duration=1, lookup_names = True)
+#    b.process_event()
+
+#    c = MyDiscoverer()
+#    c.find_devices(duration=1, lookup_names = True)
+#    c.process_event()
+
+ #   e = MyDiscoverer()
+ #   e.find_devices(duration=1, lookup_names = True)
+ #   e.process_event()
+
+ #   print "sa"
+
+#    readfiles = [ d, ]
+#    rfds = select.select( readfiles, [], [] )[0]
+#    if d in rfds:
+#       d.process_event()
+#    print "asda"  
+#    time.sleep(1)
+
+
+#scan() 
+#
+
