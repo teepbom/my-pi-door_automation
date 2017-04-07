@@ -4,17 +4,21 @@ var sleep = require('sleep');
 var gpio = require('rpi-gpio');
 gpio.setup(7, gpio.DIR_OUT);
 
-var user = ""
-fs = require('fs');
-fs.readFile('user2', 'utf8', function (err,data) {
-  if (err) {
-    return console.log(err);
-  }
-  user += data;
-  console.log(data);
-});
+var username = [];
+var userpass = [];
+var fs = require('fs');
+var array = fs.readFileSync('user2').toString().split("\n");
+for(i in array ) {
+    var data = [];
+    data = array[i].split("/");
+    pass = data[3];
+    name = data[5];
+    userpass[i] = pass;
+    username[i] = name;
+    console.log("ID " + data[1]  + " Username " + username[i] + " Password "+userpass[i]);
+} 
 
- 
+
 // Once bleno starts, begin advertising our BLE address
 bleno.on('stateChange', function(state) {
     console.log('State change: ' + state);
@@ -53,7 +57,6 @@ bleno.on('advertisingStart', function(error) {
                         value : null,
                         uuid : '34cd',
                         properties : ['notify', 'read', 'write'],
-                        
                         // If the client subscribes, we send out a message every 1 second
                         onSubscribe : function(maxValueSize, updateValueCallback) {
                             console.log("Device subscribed");
@@ -78,20 +81,16 @@ bleno.on('advertisingStart', function(error) {
                         
                         // Accept a new value for the characterstic's value
                         onWriteRequest : function(data, offset, withoutResponse, callback) {
-                            this.value = data;
+                            this.value = data ;
                             console.log('Write request: value = ' + this.value.toString("utf-8"));
-
-			    var n = user.search(data);
-    			    	if (n > -1){
-			      		var str = this.value.toString().substring(4);
-    			      		console.log("incoming user name " + str);
-			      		//clear value
-			      		this.value = "Needkey" ;
-			      		//open the door in 5 sec and close
-			      		//gpio.write(7,true);
-			      		//sleep.sleep(5);	
-			      		//gpio.write(7,false);	      	
- 			     	}
+			                                
+			    for(i in userpass){
+				if ( this.value.toString("utf-8") == userpass[i])
+				{				
+				  console.log ("Incomming User " +  username[i]);
+				  break;					
+				}
+			    }
 			    
 			    callback(this.RESULT_SUCCESS);
                         }

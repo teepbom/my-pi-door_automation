@@ -44,9 +44,8 @@ $(document).ready(function(){
             };
 
         $("#add").click(function(){
-	   var mac = document.getElementById("mac").value; 
            var name = document.getElementById("name").value;
-	   ws.send("adduser" + "," + mac + "," + name );
+	   ws.send("adduser" + "," + name );
            document.getElementById("remove_list").options.length = 0;
 
             });

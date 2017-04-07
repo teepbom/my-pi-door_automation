@@ -7,6 +7,9 @@ import tornado.ioloop
 import tornado.web
 import RPi.GPIO as GPIO
 
+import string
+import random
+
 from Naked.toolshed.shell import execute_js
 import adduser2 as User
 import threading
@@ -26,7 +29,8 @@ settings = dict(
 PORT = 80
 
 #Thread
-
+#generate key
+KEY_LEN = 4
 
 class MainHandler(tornado.web.RequestHandler):
   def get(self):
@@ -38,17 +42,25 @@ class WSHandler(tornado.websocket.WebSocketHandler):
   def open(self):
     print '[WS] Connection was opened.'
     self.update_user()
+
+  def base_str(self):
+    return (string.letters+string.digits)   
+  def key_gen(self):
+    keylist = [random.choice(self.base_str()) for i in range(KEY_LEN)]
+    return ("".join(keylist))
      
-  def write_user(self,str1,str2):
+  def write_user(self,str1):
     print "[user.txt] \nUser now------------------------------"
     User.read()
     print "---------------------------------------------------"
-    if any(str2 in s for s in User.array):
+    if any(str1 in s for s in User.array):
 	print "[sys] This User is already User "
     else :
+	password = self.key_gen()
+	print password
 	us = open("user2","a")
     	id = User.id + 1 
-    	txt = "ID [%s] UserName [%s] Key [%s] \n" %(str(id),str2,str1)
+    	txt = "ID/%s/Password/%s/Username/%s \n" %(str(id),password,str1)
     	us.write(txt)
     	us.close()
   def update_user(self):
@@ -90,7 +102,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
     if "adduser" in message:
       print "[sys] Adding user..."
       data = message.split(",")
-      self.write_user(str(data[1]),str(data[2]))  
+      self.write_user(str(data[1]))  
       print "[sys] Addition complete"
       self.update_user()	
     if message == "start":
