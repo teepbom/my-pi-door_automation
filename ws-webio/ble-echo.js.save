@@ -5,7 +5,6 @@ var gpio = require('rpi-gpio');
 
 gpio.setup(40, gpio.DIR_OUT);
 gpio.setup(38, gpio.DIR_OUT);
-gpio.setup(36, gpio.DIR_OUT);
 
 setTimeout(function() {gpio.write(40, true);}, 1000);
 setTimeout(function() {gpio.write(38, true);}, 1000);
@@ -119,13 +118,11 @@ bleno.on('advertisingStart', function(error) {
 				if ( this.value.toString("utf-8") == userpass[i])
 				{				
 				  console.log ("Incomming User " +  username[i]);
-				  gpio.write(40, false);
+    				  gpio.write(40, false);
     				  gpio.write(38, false);
-    				  gpio.write(36, true);
 				  setTimeout(function() {
 				     gpio.write(40, true);
        				     gpio.write(38, true);
-    				     gpio.write(36, false);
 				    }, 8000);
 				  break;					
 				}

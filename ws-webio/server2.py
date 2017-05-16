@@ -5,8 +5,10 @@ import tornado.httpserver
 import tornado.websocket
 import tornado.ioloop
 import tornado.web
+import os
+import signal
+import subprocess
 import RPi.GPIO as GPIO
-
 import string
 import random
 
@@ -108,12 +110,23 @@ class WSHandler(tornado.websocket.WebSocketHandler):
     if message == "start":
       print "[sys] Start automation..."
       global t
-      
+      GPIO.setup(40, GPIO.OUT)
+      GPIO.output(40, 1)
+
       t = multiprocessing.Process(target=execute_js('ble-echo.js'))
       t.start()
+#      subprocess.call('sudo node ble-echo.js' , shell=True)
+#      pro = subprocess.Popen('sudo node ble-echo.js', stdout=subprocess.PIPE, 
+#                       shell=True, preexec_fn=os.setsid) 
     if message == "stop":
-      print "[sys] Stop automation..."     
+      print "[sys] Stop automation..."
       t.terminate() 
+#      subprocess.call('sudo node ble-echo.js' , shell=False)           
+#      os.killpg(os.getpgid(pro.pid), signal.SIGTERM) 
+    if message == "reboot":
+      print "[sys] Reboot now..."
+      os.system('sudo reboot -f')
+
     if message == "updateuser":
       print "[sys] Update user ..."
       self.update_user()      

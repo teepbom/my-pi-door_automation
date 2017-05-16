@@ -62,6 +62,10 @@ $(document).ready(function(){
             ws.send("stop");
             });
 
+	$("#reboot").click(function(){
+            ws.send("reboot");
+            });
+
 	$("#updateuser").click(function(){
             document.getElementById("remove_list").options.length = 0;
             ws.send("updateuser");
